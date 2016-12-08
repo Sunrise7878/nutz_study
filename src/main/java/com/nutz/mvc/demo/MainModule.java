@@ -2,8 +2,10 @@ package com.nutz.mvc.demo;
 
 import org.nutz.mvc.annotation.At;
 import org.nutz.mvc.annotation.Fail;
+import org.nutz.mvc.annotation.Modules;
 import org.nutz.mvc.annotation.Ok;
 
+@Modules(scanPackage = true)
 public class MainModule {
 	
 	@At("/hello")
@@ -12,4 +14,30 @@ public class MainModule {
 	public String doHello(){
 		return "Hello Nutz!";
 	}
+	
+	//重定向试用
+	@At("/redirect")
+	@Ok("redirect:/hello")
+	@Fail("redirect:/hello")
+	public void redirect(){
+		
+	}
+	
+	//Http返回码视图
+	@At("/httpView")
+	@Ok("http:403")
+	@Fail("http:404")
+	public void httpView(){
+		
+	}
+	
+	//空白视图
+	@At("/voidView")
+	@Ok("void")
+	@Fail("void")
+	public void voidView(){
+		
+	}
+	
+	
 }
