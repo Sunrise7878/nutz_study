@@ -1,4 +1,4 @@
-package com.nutz.mvc.demo;
+package com.nutz.mvc.demo.modules;
 
 import org.nutz.mvc.annotation.At;
 import org.nutz.mvc.annotation.Fail;
