@@ -2,10 +2,13 @@ package com.nutz.mvc.demo.modules;
 
 import org.nutz.mvc.annotation.At;
 import org.nutz.mvc.annotation.Fail;
+import org.nutz.mvc.annotation.IocBy;
 import org.nutz.mvc.annotation.Modules;
 import org.nutz.mvc.annotation.Ok;
+import org.nutz.mvc.ioc.provider.ComboIocProvider;
 
 @Modules(scanPackage = true)
+@IocBy(type = ComboIocProvider.class , args = {"*js" , "conf/ioc/" , "com.nutz.mvc.demo"})
 public class MainModule {
 	
 	@At("/hello")
