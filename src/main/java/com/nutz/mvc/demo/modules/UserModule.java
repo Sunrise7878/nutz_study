@@ -41,40 +41,15 @@ public class UserModule {
 	@Fail("json")
 	public Result register(@Param("::user.") User user){
 		if(user.getPasswd() != null && user.getUserName() != null){
-			userServiceImpl.insertUser(user);
-			return Result.doSuccess(user);
+			User u = userServiceImpl.insertUser(user);
+			if(u != null && u.getUserID() >0 && u.getUserName().equals(user.getUserName())){
+				return Result.doSuccess(u);
+			}
+			return Result.doError("用户已存在或服务器异常");
 		}else{
 			return Result.doError("用户名和密码不能为空！");
 		}
 	}
-	
-	
-	/*@At("/userlogin")
-	@Ok("json")
-	@Fail("json")
-	public Result login(@Param("userName") String userName , @Param("passwd") String passwd){
-		User user = userServiceImpl.selectUser(2);
-		if(user != null){
-			if(user.getPasswd().equals(passwd)){
-				return Result.doSuccess(user);
-			}else{
-				return Result.doError("用户名密码不匹配");
-			}
-		}else{
-			return Result.doError("该用户不存在");
-		}
-	}
-	
-	@At("/userReg")
-	@Ok("json")
-	@Fail("json")
-	public Result resgiter(@Param("::user.") User user){
-		if(userServiceImpl.insertUser(user)){
-			return Result.doSuccess(user);
-		}else{
-			return Result.doError("注册失败");
-		}
-	}*/
 
 	public UserService getUserServiceImpl() {
 		return userServiceImpl;

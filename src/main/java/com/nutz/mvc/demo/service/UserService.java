@@ -10,6 +10,6 @@ public interface UserService {
 	public User selectUser(int userName);
 	
 	//插入用户
-	public boolean insertUser(User user);
+	public User insertUser(User user);
 
 }

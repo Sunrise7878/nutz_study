@@ -71,5 +71,12 @@ public class User {
 	public void setUserID(int userID) {
 		this.userID = userID;
 	}
+
+	@Override
+	public String toString() {
+		return "User [userID=" + userID + ", userName=" + userName + ", passwd=" + passwd + ", age=" + age + "]";
+	}
+	
+	
 	
 }

@@ -3,6 +3,7 @@ package com.nutz.mvc.demo.service;
 
 import java.util.List;
 
+import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
@@ -15,7 +16,6 @@ public class UserServiceImpl implements UserService{
 	@Inject
 	private Dao dao;
 	
-	private List<User> users;
 	
 	public UserServiceImpl(Dao dao) {
 		super();
@@ -27,9 +27,12 @@ public class UserServiceImpl implements UserService{
 		return null;
 	}
 
-	public boolean insertUser(User user) {
-		// TODO Auto-generated method stub
-		return false;
+	public User insertUser(User user) {
+		//查询该账号是否存在,若存在则注册失败
+		if(dao.query(User.class, Cnd.where("userName", "=" , user.getUserName())).size() == 0){
+			return dao.insert(user);
+		}
+		return null;
 	}
 	
 	
