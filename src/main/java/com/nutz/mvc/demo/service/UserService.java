@@ -1,8 +1,8 @@
 package com.nutz.mvc.demo.service;
 
 
-import com.nutz.mvc.demo.entity.User;
 
+import com.nutz.mvc.demo.entity.User;
 
 public interface UserService {
 	
