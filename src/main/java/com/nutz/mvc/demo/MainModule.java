@@ -1,4 +1,4 @@
-package com.nutz.mvc.demo.modules;
+package com.nutz.mvc.demo;
 
 import org.nutz.dao.Dao;
 import org.nutz.ioc.loader.annotation.Inject;
@@ -8,6 +8,7 @@ import org.nutz.mvc.annotation.Fail;
 import org.nutz.mvc.annotation.IocBy;
 import org.nutz.mvc.annotation.Modules;
 import org.nutz.mvc.annotation.Ok;
+import org.nutz.mvc.annotation.SetupBy;
 import org.nutz.mvc.ioc.provider.ComboIocProvider;
 
 
@@ -15,6 +16,7 @@ import org.nutz.mvc.ioc.provider.ComboIocProvider;
 @IocBy(type = ComboIocProvider.class, args = {  
 	    "*js", "conf/ioc/",   
 	    "*anno", "com.nutz.mvc.demo"})
+@SetupBy(value = MainSetup.class)
 @IocBean
 public class MainModule {
 	
