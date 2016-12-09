@@ -6,7 +6,7 @@
   	<filter-class>org.nutz.mvc.NutFilter</filter-class>
   	<init-param>
   		<param-name>modules</param-name>
-  		<param-value>com.nutz.mvc.demo.modules.MainModule</param-value>
+  		<param-value>com.nutz.mvc.demo.MainModule</param-value>
   	</init-param>
   </filter>
   
