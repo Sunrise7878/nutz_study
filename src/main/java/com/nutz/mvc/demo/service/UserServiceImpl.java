@@ -4,12 +4,17 @@ package com.nutz.mvc.demo.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nutz.dao.Dao;
+import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
 
 import com.nutz.mvc.demo.entity.User;
 
-@IocBean
+@IocBean()
 public class UserServiceImpl implements UserService{
+	
+	@Inject
+	private Dao dao;
 	
 	private List<User> users;
 	
@@ -28,6 +33,11 @@ public class UserServiceImpl implements UserService{
 			}
 		}
 		return null;
+	}
+
+	public boolean insertUser(User user) {
+		
+		return false;
 	}
 
 }

@@ -8,5 +8,8 @@ public interface UserService {
 	
 	//根据用户名查询用户
 	public User selectUser(int userName);
+	
+	//插入用户
+	public boolean insertUser(User user);
 
 }

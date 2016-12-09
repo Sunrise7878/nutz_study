@@ -1,5 +1,8 @@
 package com.nutz.mvc.demo.modules;
 
+import org.nutz.dao.Dao;
+import org.nutz.ioc.loader.annotation.Inject;
+import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.mvc.annotation.At;
 import org.nutz.mvc.annotation.Fail;
 import org.nutz.mvc.annotation.IocBy;
@@ -12,12 +15,17 @@ import org.nutz.mvc.ioc.provider.ComboIocProvider;
 @IocBy(type = ComboIocProvider.class, args = {  
 	    "*js", "conf/ioc/",   
 	    "*anno", "com.nutz.mvc.demo"})
+@IocBean
 public class MainModule {
+	
+	@Inject
+	private Dao dao;
 	
 	@At("/hello")
 	@Ok("jsp:/views/hello")
 	@Fail("jsp:/views/error")
 	public String doHello(){
+		System.out.println("Dao = " + dao);
 		return "Hello Nutz!";
 	}
 	
