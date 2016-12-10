@@ -39,16 +39,22 @@ public class UserModule {
 	@At("/register")
 	@Ok("json")
 	@Fail("json")
-	public Result register(@Param("::user.") User user){
-		if(user.getPasswd() != null && user.getUserName() != null){
-			User u = userServiceImpl.insertUser(user);
-			if(u != null && u.getUserID() >0 && u.getUserName().equals(user.getUserName())){
-				return Result.doSuccess(u);
+	public Result register(@Param("::user.") User user) throws Exception{
+		try{
+			if(user.getPasswd() != null && user.getUserName() != null){
+				User u = userServiceImpl.insertUser(user);
+				if(u != null && u.getUserID() >0 && u.getUserName().equals(user.getUserName())){
+					return Result.doSuccess(u);
+				}
+				return Result.doError("用户已存在或服务器异常");
+			}else{
+				return Result.doError("用户名和密码不能为空！");
 			}
-			return Result.doError("用户已存在或服务器异常");
-		}else{
-			return Result.doError("用户名和密码不能为空！");
+			
+		}catch (Exception e) {
+			return Result.doException("服务器异常，请稍后重试");
 		}
+		
 	}
 
 	public UserService getUserServiceImpl() {
