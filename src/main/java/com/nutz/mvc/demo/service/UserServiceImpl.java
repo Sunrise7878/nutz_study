@@ -5,6 +5,7 @@ import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.lang.Strings;
 
 import com.nutz.mvc.demo.entity.User;
 import com.nutz.mvc.demo.utils.MD5Encryption;
@@ -21,9 +22,13 @@ public class UserServiceImpl implements UserService{
 		this.dao = dao;
 	}
 
-	public User selectUser(int userName) {
-		// TODO Auto-generated method stub
-		return null;
+	public User selectUser(String userName) {
+		User user = dao.fetch(User.class , Cnd.where("userName" , "=" , userName.trim()));
+		if(user == null || user.getUserID() < 1){
+			return null;
+		}else{
+			return user;
+		}
 	}
 
 	public User insertUser(User user) {
@@ -32,6 +37,22 @@ public class UserServiceImpl implements UserService{
 			user.setPasswd(MD5Encryption.encryption(user.getPasswd()));
 			return dao.insert(user);
 		}
+		return null;
+	}
+
+	public String checkUser(User user, boolean create) {
+		if(user == null){
+			return "空对象";
+		}
+		
+		if(Strings.isBlank(user.getUserName()) || Strings.isBlank(user.getPasswd())){
+			return "用户名密码不能为空";
+		}
+		
+		if(create && dao.count(User.class , Cnd.where("userName", "=", user.getUserName().trim()))!= 0){
+			return "用户已存在";
+		}
+		
 		return null;
 	}
 	

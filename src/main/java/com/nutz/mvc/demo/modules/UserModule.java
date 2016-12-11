@@ -1,7 +1,12 @@
 package com.nutz.mvc.demo.modules;
 
+import javax.servlet.http.HttpSession;
+
+import org.nutz.dao.Cnd;
+import org.nutz.dao.Dao;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.lang.Strings;
 import org.nutz.mvc.annotation.At;
 import org.nutz.mvc.annotation.Fail;
 import org.nutz.mvc.annotation.Ok;
@@ -9,13 +14,18 @@ import org.nutz.mvc.annotation.Param;
 
 import com.nutz.mvc.demo.entity.User;
 import com.nutz.mvc.demo.service.UserService;
+import com.nutz.mvc.demo.utils.MD5Encryption;
 import com.nutz.mvc.demo.utils.Result;
 
-@IocBean
+@IocBean(args = {"refer:userServiceImpl"})
 public class UserModule {
 	
 	@Inject
 	private UserService userServiceImpl;
+	
+	public UserModule(UserService userServiceImpl) {
+		this.userServiceImpl = userServiceImpl;
+	}
 	
 	/**
 	 *    @param userName 用户名
@@ -25,9 +35,29 @@ public class UserModule {
 	 *    <p> 1、若返回值为null，则说明该用户不存在
 	 *    <p> 2、比对用户输入密码和查询出用户的密码，若匹配则登录成功，否则登录失败
 	 */
-	public Result login(@Param("userName") String userName , @Param("passwd") String passwd){
-		
-		return null;
+	@At("/login")
+	@Ok("json")
+	@Fail("json")
+	public Result login(@Param("userName") String userName , @Param("passwd") String passwd , HttpSession session) throws Exception{
+		try{
+			if(Strings.isBlank(userName) || Strings.isBlank(passwd)){
+				return Result.doError("用户名密码不能为空");
+			}else{
+				User user = userServiceImpl.selectUser(userName.trim());
+				if(user == null){
+					return Result.doError("该用户不存在");
+				}else{
+					if(MD5Encryption.encryption(passwd.trim()).equals(user.getPasswd())){
+						//putUserIntoSession(session, user);
+						return Result.doSuccess(user);
+					}else{
+						return Result.doError("用户名密码不匹配");
+					}
+				}
+			}
+		}catch (Exception e) {
+			return Result.doException("服务器异常");
+		}
 	}
 	
 	
@@ -39,7 +69,7 @@ public class UserModule {
 	@At("/register")
 	@Ok("json")
 	@Fail("json")
-	public Result register(@Param("::user.") User user) throws Exception{
+	public Result register(@Param("::user.") User user , HttpSession session) throws Exception{
 		try{
 			if(user.getPasswd() != null && user.getUserName() != null){
 				User u = userServiceImpl.insertUser(user);
@@ -50,13 +80,25 @@ public class UserModule {
 			}else{
 				return Result.doError("用户名和密码不能为空！");
 			}
-			
 		}catch (Exception e) {
 			return Result.doException("服务器异常，请稍后重试");
 		}
 		
 	}
-
+	
+	/**
+	 * 
+	 * @param session
+	 * @param user
+	 * 
+	 * 将登录或注册成功的用户信息存储在session中
+	 * 
+	 */
+	public void putUserIntoSession(HttpSession session , User user){
+		session.setAttribute("userName", user.getUserName());
+		session.setAttribute("passwd", user.getPasswd());
+	}
+	
 	public UserService getUserServiceImpl() {
 		return userServiceImpl;
 	}
