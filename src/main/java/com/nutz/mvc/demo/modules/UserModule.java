@@ -47,7 +47,7 @@ public class UserModule {
 				if(user == null){
 					return Result.doError("该用户不存在");
 				}else{
-					if(MD5Encryption.encryption(passwd.trim()).equals(user.getPasswd())){
+					if(MD5Encryption.encryption(passwd.trim()).equals(user.getUserPwd())){
 						//putUserIntoSession(session, user);
 						return Result.doSuccess(user);
 					}else{
@@ -71,9 +71,9 @@ public class UserModule {
 	@Fail("json")
 	public Result register(@Param("::user.") User user , HttpSession session) throws Exception{
 		try{
-			if(user.getPasswd() != null && user.getUserName() != null){
+			if(user.getUserPwd() != null && user.getUserName() != null){
 				User u = userServiceImpl.insertUser(user);
-				if(u != null && u.getUserID() >0 && u.getUserName().equals(user.getUserName())){
+				if(u != null && u.getuId() >0 && u.getUserName().equals(user.getUserName())){
 					return Result.doSuccess(u);
 				}
 				return Result.doError("用户已存在或服务器异常");
@@ -96,7 +96,7 @@ public class UserModule {
 	 */
 	public void putUserIntoSession(HttpSession session , User user){
 		session.setAttribute("userName", user.getUserName());
-		session.setAttribute("passwd", user.getPasswd());
+		session.setAttribute("passwd", user.getUserPwd());
 	}
 	
 	public UserService getUserServiceImpl() {
