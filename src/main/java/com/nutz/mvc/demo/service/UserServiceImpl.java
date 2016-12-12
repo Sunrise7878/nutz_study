@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService{
 
 	public User selectUser(String userName) {
 		User user = dao.fetch(User.class , Cnd.where("userName" , "=" , userName.trim()));
-		if(user == null || user.getUserID() < 1){
+		if(user == null || user.getuId() < 1){
 			return null;
 		}else{
 			return user;
@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService{
 	public User insertUser(User user) {
 		//查询该账号是否存在,若存在则注册失败
 		if(dao.query(User.class, Cnd.where("userName", "=" , user.getUserName())).size() == 0){
-			user.setPasswd(MD5Encryption.encryption(user.getPasswd()));
+			user.setUserPwd(MD5Encryption.encryption(user.getUserPwd()));
 			return dao.insert(user);
 		}
 		return null;
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService{
 			return "空对象";
 		}
 		
-		if(Strings.isBlank(user.getUserName()) || Strings.isBlank(user.getPasswd())){
+		if(Strings.isBlank(user.getUserName()) || Strings.isBlank(user.getUserPwd())){
 			return "用户名密码不能为空";
 		}
 		
