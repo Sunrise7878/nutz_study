@@ -15,7 +15,7 @@ import org.nutz.mvc.ioc.provider.ComboIocProvider;
 @Modules(scanPackage = true)
 @IocBy(type = ComboIocProvider.class, args = {  
 	    "*js", "conf/ioc/",   
-	    "*anno", "com.nutz.mvc.demo"})
+	    "*anno", "com.nutz.mvc.demo" , "com.nutz.mvc.demo.test"})
 @SetupBy(value = MainSetup.class)
 @IocBean
 public class MainModule {
