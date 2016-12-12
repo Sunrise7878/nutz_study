@@ -21,10 +21,10 @@ import com.nutz.mvc.demo.utils.Result;
 public class UserModule {
 	
 	@Inject
-	private UserService userServiceImpl;
+	private UserService userService;
 	
-	public UserModule(UserService userServiceImpl) {
-		this.userServiceImpl = userServiceImpl;
+	public UserModule(UserService userService) {
+		this.userService = userService;
 	}
 	
 	/**
@@ -32,8 +32,10 @@ public class UserModule {
 	 *    @param passwd 用户密码
 	 * 
 	 *    根据userName参数调用service层查询出对应的user
-	 *    <p> 1、若返回值为null，则说明该用户不存在
-	 *    <p> 2、比对用户输入密码和查询出用户的密码，若匹配则登录成功，否则登录失败
+	 *    <p> 1、检查用户输入的用户名和密码是否为空，若未空则登录失败，若不为空则转步骤2
+	 *    <p> 2、调用service层selectUser函数，根据用户名查询该用户，若查询结果为空则登录失败，若不为空则转步骤3
+	 *    <p> 3、利用MD5算法对用户输入的密码进行加密处理后与查询用户的密码比对，若匹配则登录成功，否则登录失败
+	 *    <p> 4、对登录过程所发生的异常进行捕获
 	 */
 	@At("/login")
 	@Ok("json")
@@ -41,22 +43,20 @@ public class UserModule {
 	public Result login(@Param("userName") String userName , @Param("passwd") String passwd , HttpSession session) throws Exception{
 		try{
 			if(Strings.isBlank(userName) || Strings.isBlank(passwd)){
-				return Result.doError("用户名密码不能为空");
-			}else{
-				User user = userServiceImpl.selectUser(userName.trim());
-				if(user == null){
-					return Result.doError("该用户不存在");
+				return Result.doError("用户名和密码不能为空");
+			}else if (userService.selectUser(userName.trim()) == null){
+				return Result.doError("该账户不存在");
+			}else {
+				User user = userService.selectUser(userName.trim());
+				if(MD5Encryption.encryption(passwd.trim()).equals(user.getUserPwd())){
+					putUserIntoSession(session, user);
+					return Result.doSuccess(user);
 				}else{
-					if(MD5Encryption.encryption(passwd.trim()).equals(user.getUserPwd())){
-						//putUserIntoSession(session, user);
-						return Result.doSuccess(user);
-					}else{
-						return Result.doError("用户名密码不匹配");
-					}
+					return Result.doError("用户名和密码不匹配");
 				}
 			}
 		}catch (Exception e) {
-			return Result.doException("服务器异常");
+			return Result.doException("服务器异常，请稍后重试");
 		}
 	}
 	
@@ -71,14 +71,15 @@ public class UserModule {
 	@Fail("json")
 	public Result register(@Param("::user.") User user , HttpSession session) throws Exception{
 		try{
-			if(user.getUserPwd() != null && user.getUserName() != null){
-				User u = userServiceImpl.insertUser(user);
-				if(u != null && u.getuId() >0 && u.getUserName().equals(user.getUserName())){
+			if(user == null || Strings.isBlank(user.getUserName()) || Strings.isBlank(user.getUserPwd())){
+				return Result.doError("用户名和密码不能为空");
+			}else{
+				User u = userService.insertUser(user);
+				if(u == null){
+					return Result.doError("该用户已存在，请直接登录");
+				}else{
 					return Result.doSuccess(u);
 				}
-				return Result.doError("用户已存在或服务器异常");
-			}else{
-				return Result.doError("用户名和密码不能为空！");
 			}
 		}catch (Exception e) {
 			return Result.doException("服务器异常，请稍后重试");
@@ -97,13 +98,5 @@ public class UserModule {
 	public void putUserIntoSession(HttpSession session , User user){
 		session.setAttribute("userName", user.getUserName());
 		session.setAttribute("passwd", user.getUserPwd());
-	}
-	
-	public UserService getUserServiceImpl() {
-		return userServiceImpl;
-	}
-
-	public void setUserServiceImpl(UserService userServiceImpl) {
-		this.userServiceImpl = userServiceImpl;
 	}
 }
