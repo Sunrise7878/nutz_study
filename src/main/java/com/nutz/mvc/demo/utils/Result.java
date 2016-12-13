@@ -2,6 +2,8 @@ package com.nutz.mvc.demo.utils;
 
 import java.io.Serializable;
 
+import com.alibaba.fastjson.JSON;
+
 public class Result implements Serializable{
 	
 	/**
@@ -32,28 +34,28 @@ public class Result implements Serializable{
 	}
 	
 	//请求成功的方法
-	public static Result doSuccess(Object object){
+	public static String doSuccess(Object object){
 		Result result = new Result();
 		result.setStatus("success");
 		result.setMessage("请求处理成功");
 		result.setData(object);
-		return result;
+		return JSON.toJSONString(result);
 	}
 	
 	//请求失败的方法
-	public static Result doError(String message){
+	public static String doError(String message){
 		Result result = new Result();
 		result.setStatus("error");
 		result.setMessage(message);
-		return result;
+		return JSON.toJSONString(result);
 	}
 	
 	//请求异常的方法
-	public static Result doException(String message){
+	public static String doException(String message){
 		Result result = new Result();
 		result.setStatus("exception");
 		result.setMessage(message);
-		return result;
+		return JSON.toJSONString(result);
 	}
 
 	public void setStatus(String status) {

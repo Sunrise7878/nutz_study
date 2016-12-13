@@ -1,6 +1,7 @@
 package com.nutz.mvc.demo.modules;
 
 import javax.servlet.http.HttpSession;
+import javax.websocket.Session;
 
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
@@ -27,6 +28,7 @@ public class UserModule {
 		this.userService = userService;
 	}
 	
+	
 	/**
 	 *    @param userName 用户名
 	 *    @param passwd 用户密码
@@ -39,64 +41,51 @@ public class UserModule {
 	 *    <p> 4、捕获登陆过程中发生的异常并作相应处理
 	 * 
 	 */
-	@At("/login")
-	@Ok("json")
-	@Fail("json")
-	public Result login(@Param("userName") String userName , @Param("passwd") String passwd , HttpSession session) throws Exception{
+	@At("/testjsonp")
+	@Ok("raw")
+	@Fail("raw")
+	public String login_jsonp(@Param("userName") String userName , @Param("passwd") String passwd ,@Param("callback") String callback, HttpSession session){
+		String result;
 		try{
 			if(Strings.isBlank(userName)  || Strings.isBlank(passwd)){
-				return Result.doError("用户名密码不能为空");
+				result = Result.doError("用户名密码不能为空");
 			}else if(userService.selectUser(userName.trim()) == null){
-				return Result.doError("该用户不存在");
+				result = Result.doError("该用户不存在");
 			}else {
 				User user = userService.selectUser(userName.trim());
 				if(MD5Encryption.encryption(passwd.trim()).equals(user.getUserPwd())){
 					putUserIntoSession(session, user);
-					return Result.doSuccess(user);
+					result = Result.doSuccess(user);
 				}else{
-					return Result.doError("用户名与密码不匹配");
+					result = Result.doError("用户名与密码不匹配");
 				}
 			}
+			String jsonp = callback + "(" + result + ")";
+			return jsonp;
 		}catch (Exception e) {
-			return Result.doException("服务器异常，请稍后重试");
+			return callback + "(" + Result.doException("服务器异常，请稍后重试") + ")";
 		}
 	}
 	
-	
-	/**
-	 *   用户注册，调用service层将用户信息存储至数据库
-	 *   <p> 若账号已存在，则注册失败
-	 *   <p> 若账号不存在，则执行注册
-	 */
-	@At("/register")
-	@Ok("json")
-	@Fail("json")
-	public Result register(@Param("::user.") User user , HttpSession session) throws Exception{
-		try{
-			if(user == null ||Strings.isBlank(user.getUserName()) || Strings.isBlank(user.getUserPwd())){
-				return Result.doError("用户名和密码不能为空");
-			}else{
-				User u = userService.insertUser(user);
-				if(u == null){
-					return Result.doError("该用户已存在，请直接登录");
-				}else{
-					putUserIntoSession(session, u);
-					return Result.doSuccess("注册成功");
-				}
-			}
-		}catch (Exception e) {
-			return Result.doException("服务器异常，请稍后重试");
-		}
+	@At("/logout")
+	@Ok(">>:/")
+	public void logout(HttpSession session){
+		session.invalidate();
 	}
 	
 	/**
-	 * @param session 会话
-	 * @param user 登录成功后的user对象
+	 *   @param session 会话
+	 *   @param user 登录成功后的user对象
 	 * 
-	 * <p>将登录或注册成功的用户信息存储在session中
+	 *   <p><strong>功能：</strong>将登录或注册成功的用户信息存储在session中
 	 */
 	public void putUserIntoSession(HttpSession session , User user){
 		session.setAttribute("userName", user.getUserName());
 		session.setAttribute("passwd", user.getUserPwd());
+		session.setAttribute("birthday", user.getBirthday());
+		session.setAttribute("gender", user.getGender());
+		session.setAttribute("city", user.getCity());
+		session.setAttribute("weight", user.getWeight());
+		session.setAttribute("height", user.getHeight());
 	}
 }

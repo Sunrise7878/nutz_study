@@ -23,7 +23,7 @@ public class TestUserModule extends TestBase{
 		scanner = new Scanner(System.in);
 	}
 	
-	@Test
+	/*@Test
 	public void TestLogin() throws Exception{
 		System.out.print("输入账号:");
 		String userName = scanner.nextLine();
@@ -33,7 +33,7 @@ public class TestUserModule extends TestBase{
 		log.debug("请求结果:" + result.getStatus());
 		log.debug("请求消息:" + result.getMessage());
 		log.debug("请求数据:" + result.getData());
-	}
+	}*/
 	
 	@Test
 	public void TestRegister() throws Exception{
