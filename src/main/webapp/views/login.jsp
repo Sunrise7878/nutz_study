@@ -13,14 +13,15 @@
 <script type="text/javascript">
 	function login() {
 		$.ajax({
-			url : '<%=basePath%>login',
+			url : '<%=basePath%>testjsonp',
 			type : 'POST',
-			dataType : 'json',
+			dataType : 'jsonp',
+			jsonp:"callback",
 			data : {"userName" : $('#userName').val() , "passwd" : $('#passwd').val()},
+			jsonpCallback:"success_jsonp",
 			success : function(data) {
 				if(data.status == 'success'){
-					alert("登录成功");
-					$('#userShow').append("用户名: " + "<%=request.getSession().getAttribute("userName") %>");
+					window.location = "<%=basePath%>/views/user.jsp"
 				}else{
 					alert(data.message)
 				}
