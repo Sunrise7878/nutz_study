@@ -37,6 +37,12 @@ public class UserModule {
 	 *    <p> 2、调用service层selectUser方法，根据用户名查找用户，若查询结果为空则该用户不存在，若不为空则转3
 	 *    <p> 3、将用户输入的密码利用MD5算法加密，并与查询出的用户密码进行比对，若匹配则登录成功，若不匹配则登录失败
 	 *    <p> 4、捕获登陆过程中发生的异常并作相应处理
+	 * 
+	 *    根据userName参数调用service层查询出对应的user
+	 *    <p> 1、检查用户输入的用户名和密码是否为空，若未空则登录失败，若不为空则转步骤2
+	 *    <p> 2、调用service层selectUser函数，根据用户名查询该用户，若查询结果为空则登录失败，若不为空则转步骤3
+	 *    <p> 3、利用MD5算法对用户输入的密码进行加密处理后与查询用户的密码比对，若匹配则登录成功，否则登录失败
+	 *    <p> 4、对登录过程所发生的异常进行捕获
 	 */
 	@At("/login")
 	@Ok("json")
@@ -51,8 +57,17 @@ public class UserModule {
 				User user = userService.selectUser(userName.trim());
 				if(user.getUserPwd().equals(MD5Encryption.encryption(passwd))){
 					return Result.doException("登录成功");
+				return Result.doError("用户名和密码不能为空");
+			}else if (userService.selectUser(userName.trim()) == null){
+				return Result.doError("该账户不存在");
+			}else {
+				User user = userService.selectUser(userName.trim());
+				if(MD5Encryption.encryption(passwd.trim()).equals(user.getUserPwd())){
+					putUserIntoSession(session, user);
+					return Result.doSuccess(user);
 				}else{
 					return Result.doError("用户名与密码不匹配");
+					return Result.doError("用户名和密码不匹配");
 				}
 			}
 		}catch (Exception e) {
@@ -80,6 +95,14 @@ public class UserModule {
 				}else{
 					putUserIntoSession(session, u);
 					return Result.doSuccess("注册成功");
+			if(user == null || Strings.isBlank(user.getUserName()) || Strings.isBlank(user.getUserPwd())){
+				return Result.doError("用户名和密码不能为空");
+			}else{
+				User u = userService.insertUser(user);
+				if(u == null){
+					return Result.doError("该用户已存在，请直接登录");
+				}else{
+					return Result.doSuccess(u);
 				}
 			}
 		}catch (Exception e) {
