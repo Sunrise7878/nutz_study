@@ -21,7 +21,8 @@ public class UserServiceImpl implements UserService{
 		super();
 		this.dao = dao;
 	}
-
+	
+	//根据用户名查询用户
 	public User selectUser(String userName) {
 		User user = dao.fetch(User.class , Cnd.where("userName" , "=" , userName.trim()));
 		if(user == null || user.getuId() < 1){
@@ -30,32 +31,17 @@ public class UserServiceImpl implements UserService{
 			return user;
 		}
 	}
-
+	
+	//插入用户
 	public User insertUser(User user) {
-		//查询该账号是否存在,若存在则注册失败
-		if(dao.query(User.class, Cnd.where("userName", "=" , user.getUserName())).size() == 0){
-			user.setUserPwd(MD5Encryption.encryption(user.getUserPwd()));
-			return dao.insert(user);
-		}
-		return null;
+		user.setUserPwd(MD5Encryption.encryption(user.getUserPwd()));
+		return dao.insert(user);
 	}
-
-	public String checkUser(User user, boolean create) {
-		if(user == null){
-			return "空对象";
-		}
-		
-		if(Strings.isBlank(user.getUserName()) || Strings.isBlank(user.getUserPwd())){
-			return "用户名密码不能为空";
-		}
-		
-		if(create && dao.count(User.class , Cnd.where("userName", "=", user.getUserName().trim()))!= 0){
-			return "用户已存在";
-		}
-		
-		return null;
+	
+	//根据用户名查询用户数量，即判断用户是否已存在
+	public int countUser(String userName) {
+		return dao.count(User.class, Cnd.where("userName", "=", userName.trim()));
 	}
 	
 	
-
 }
