@@ -34,28 +34,28 @@ public class Result implements Serializable{
 	}
 	
 	//请求成功的方法
-	public static String doSuccess(Object object){
+	public static Result doSuccess(Object object , String message){
 		Result result = new Result();
 		result.setStatus("success");
-		result.setMessage("请求处理成功");
+		result.setMessage(message);
 		result.setData(object);
-		return JSON.toJSONString(result);
+		return result;
 	}
 	
 	//请求失败的方法
-	public static String doError(String message){
+	public static Result doError(String message){
 		Result result = new Result();
 		result.setStatus("error");
 		result.setMessage(message);
-		return JSON.toJSONString(result);
+		return result;
 	}
 	
 	//请求异常的方法
-	public static String doException(String message){
+	public static Result doException(String message){
 		Result result = new Result();
 		result.setStatus("exception");
 		result.setMessage(message);
-		return JSON.toJSONString(result);
+		return result;
 	}
 
 	public void setStatus(String status) {
