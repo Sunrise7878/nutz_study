@@ -10,43 +10,41 @@ import org.nutz.mvc.annotation.Fail;
 import org.nutz.mvc.annotation.Ok;
 import org.nutz.mvc.annotation.Param;
 
-import com.alibaba.fastjson.JSON;
 import com.nutz.mvc.demo.entity.User;
 import com.nutz.mvc.demo.service.UserService;
 import com.nutz.mvc.demo.utils.MD5Encryption;
 import com.nutz.mvc.demo.utils.Result;
 
-@IocBean(args = {"refer:userServiceImpl"})
+@IocBean(args = {"refer:userService"})
 public class UserModule {
 	
 	@Inject
-	private UserService userServiceImpl;
+	private UserService userService;
 	
-	public UserModule(UserService userServiceImpl) {
-		this.userServiceImpl = userServiceImpl;
+	public UserModule(UserService userService) {
+		this.userService = userService;
 	}
 	
 	
 	/**
-	 *    @param userName 用户名
-	 *    @param passwd 用户密码
-	 *    
-	 * 	  <p><strong>功能：</strong>根据userName参数调用service层查询出对应的user
-	 *    
+	 * 	  <p><strong>功能：</strong>实现登录
 	 *    <p> 1、判断用户输入参数是否为空，若为空则登录失败，若不为空则转2
 	 *    <p> 2、调用service层selectUser方法，根据用户名查找用户，若查询结果为空则该用户不存在，若不为空则转3
 	 *    <p> 3、将用户输入的密码利用MD5算法加密，并与查询出的用户密码进行比对，若匹配则登录成功，若不匹配则登录失败
 	 *    <p> 4、捕获登陆过程中发生的异常并作相应处理
-	 * 
+	 *    
+	 *    @param userName 用户名
+	 *    @param passwd 用户密码
+	 *    
 	 */
 	@At("/testjsonp")
 	@Ok("json")
 	@Fail("json")
-	public Result login_jsonp(@Param("userName") String userName , @Param("passwd") String passwd , HttpSession session){
+	public Result login(@Param("userName") String userName , @Param("passwd") String passwd , HttpSession session){
 		try{
-			Result result = userCheck(userName, passwd, false);
+			Result result = userCheck(userName, passwd , null , false);
 			if(result == null){
-				User user = userServiceImpl.selectUser(userName.trim());
+				User user = userService.selectUser(userName.trim());
 				if(user.getUserPwd().equals(MD5Encryption.encryption(passwd.trim()))){
 					putUserIntoSession(session, user);
 					result = Result.doSuccess(user, "登录成功");
@@ -61,6 +59,7 @@ public class UserModule {
 	}
 	
 	/**
+	 * 
 	 *    <p><strong>功能：</strong>将输入合法的user存储到数据库中，实现注册
 	 *    <p> 1、判断用户输入的参数是否合法，若不合法则注册失败，若合法则转2
 	 *    <p> 2、判断数据库中是否有该用户名的用户存在，若存在则注册失败，若不存在转3
@@ -71,12 +70,13 @@ public class UserModule {
 	@At("/register")
 	@Ok("json")
 	@Fail("json")
-	public Result register(@Param("userName") String userName , @Param("passwd") String passwd , HttpSession session){
+	public Result register(@Param("userName") String userName , @Param("passwd") String passwd , @Param("nickName") String nickName , HttpSession session){
 		try{
-			Result result = userCheck(userName, passwd, true);
+			Result result = userCheck(userName, passwd , nickName , true);
 			if(result == null){
-				User user = userServiceImpl.insertUser(new User(userName.trim() , passwd.trim()));
+				User user = userService.insertUser(new User(userName.trim() , passwd.trim() , nickName.trim()));
 				if(user != null && user.getuId() > 0){
+					putUserIntoSession(session, user);
 					result = Result.doSuccess(user, "注册成功");
 				}else{
 					result = Result.doError("注册失败，服务器异常");
@@ -102,11 +102,28 @@ public class UserModule {
 	
 	/**
 	 * 
-	 *    @param isRegister 是否是注册
-	 *    <p><strong>功能：</strong>检测用户输入数据的合法性
+	 *    <p><strong>功能：</strong>修改用户密码
+	 *    <p> 1、判断用户输入的参数是否合法，若不合法则注册失败，若合法则转2
+	 *    <p> 2、判断数据库中是否有该用户名的用户存在，若存在则注册失败，若不存在转3
+	 *    <p> 3、将用户输入的参数封装成一个User对象，并调用service层方法，将该条记录插入到数据库中，注册成功
+	 *    <p> 4、注册过程中，全程捕获异常，若发生异常，则注册失败
 	 *    
 	 */
-	public Result userCheck(String userName , String passwd , boolean isRegister){
+	public Result changePasswd(@Param("userName") String userName , @Param("passwd") String passwd , HttpSession session) throws Exception{
+		try{
+			
+		}catch (Exception e) {
+			
+		}
+		return null;
+	}
+	
+	/**
+	 * 	  <p><strong>功能：</strong>检测用户输入数据的合法性（包含对空输入，密码长度以及用户存在性的判断）
+	 *    @param isRegister 是否是注册
+	 *    
+	 */
+	public Result userCheck(String userName , String passwd , String nickName , boolean isRegister){
 		if(userName == null || passwd == null || Strings.isBlank(userName) || Strings.isBlank(passwd)){
 			return Result.doError("用户名/密码不能为空");
 		}
@@ -114,11 +131,14 @@ public class UserModule {
 			return Result.doError("输入的密码长度不合法");
 		}
 		if(isRegister) {
-			if(userServiceImpl.countUser(userName.trim()) > 0){
+			if(nickName== null || Strings.isBlank(nickName)){
+				return Result.doError("昵称不能为空");
+			}
+			if(userService.countUser(userName.trim()) > 0){
 				return Result.doError("该用户已存在,请直接登录");
 			}
 		}else {
-			if(userServiceImpl.countUser(userName.trim()) == 0){
+			if(userService.countUser(userName.trim()) == 0){
 				return Result.doError("该用户不存在");
 			}
 		}
@@ -126,10 +146,11 @@ public class UserModule {
 	}
 	
 	/**
+	 * 
+	 *   <p><strong>功能：</strong>将登录或注册成功的用户信息存储在session中
 	 *   @param session 会话
 	 *   @param user 登录成功后的user对象
 	 * 
-	 *   <p><strong>功能：</strong>将登录或注册成功的用户信息存储在session中
 	 */
 	public void putUserIntoSession(HttpSession session , User user){
 		session.setAttribute("userName", user.getUserName());

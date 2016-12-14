@@ -27,11 +27,13 @@ public class TestUserModule extends TestBase{
 	//注册测试
 	@Test
 	public void register() throws Exception{
+		System.out.print("请输入昵称:");
+		String nickName = scanner.nextLine();
 		System.out.print("请输入账号:");
 		String userName = scanner.nextLine();
 		System.out.print("请输入密码:");
 		String passwd = scanner.nextLine();
-		Result result = userMoudle.register(userName, passwd , null);
+		Result result = userMoudle.register(userName, passwd , nickName , null);
 		System.out.println("");
 		log.debug("访问结果: " + JSON.toJSONString(result));
 	}

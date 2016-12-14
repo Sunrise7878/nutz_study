@@ -5,17 +5,15 @@ import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
-import org.nutz.lang.Strings;
 
 import com.nutz.mvc.demo.entity.User;
 import com.nutz.mvc.demo.utils.MD5Encryption;
 
-@IocBean(args = {"refer:dao"})
+@IocBean(args = {"refer:dao"} , name = "userService")
 public class UserServiceImpl implements UserService{
 	
 	@Inject
 	private Dao dao;
-	
 	
 	public UserServiceImpl(Dao dao) {
 		super();

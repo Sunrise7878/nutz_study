@@ -77,6 +77,13 @@ public class User implements Serializable{
 		this.userName = userName;
 		this.userPwd = userPwd;
 	}
+	
+	public User(String userName, String userPwd, String nickName) {
+		super();
+		this.userName = userName;
+		this.userPwd = userPwd;
+		this.nickName = nickName;
+	}
 
 	public String getUserName() {
 		return userName;

@@ -10,24 +10,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>登录测试</title>
 <script src="<%=basePath%>jquery/jquery.min.js"></script>
-<script type="text/javascript">
-	function login() {
-		$.ajax({
-			url : '<%=basePath%>testjsonp',
-			type : 'POST',
-			dataType : 'json',
-			data : {"userName" : $('#userName').val() , "passwd" : $('#passwd').val()},
-			success : function(data) {
-				if(data.status == 'success'){
-					window.location = "<%=basePath%>/views/user.jsp"
-					alert(data.message)
-				}else{
-					alert(data.message)
-				}
-			}
-		});
-	}
-</script>
+<script src="<%=basePath%>js/usermodule.js" type="text/javascript"></script>
 </head>
 <body>
 	<form action="#" method="post">
@@ -35,6 +18,7 @@
 		<input type="text" name="passwd" id="passwd"/><br>
 	</form>
 	<button id="login" onclick="login()">登录</button>
+	<a href="<%=basePath %>views/register.jsp"><button>注册</button></a>
 	<div id="userShow"></div>
 	
 </body>
