@@ -40,23 +40,23 @@ public class UserModule {
 	 * 
 	 */
 	@At("/testjsonp")
-	@Ok("raw")
-	@Fail("raw")
-	public String login_jsonp(@Param("userName") String userName , @Param("passwd") String passwd ,@Param("callback") String callback, HttpSession session){
+	@Ok("json")
+	@Fail("json")
+	public Result login_jsonp(@Param("userName") String userName , @Param("passwd") String passwd , HttpSession session){
 		try{
-			String result = userCheck(userName, passwd, false);
-			if(result == null || result.length() == 0){
+			Result result = userCheck(userName, passwd, false);
+			if(result == null){
 				User user = userServiceImpl.selectUser(userName.trim());
 				if(user.getUserPwd().equals(MD5Encryption.encryption(passwd.trim()))){
 					putUserIntoSession(session, user);
-					result = JSON.toJSONString(Result.doSuccess(user, "登录成功"));
+					result = Result.doSuccess(user, "登录成功");
 				}else{
-					result = JSON.toJSONString(Result.doError("用户名与密码不匹配"));
+					result = Result.doError("用户名与密码不匹配");
 				}
 			}
-			return callback + "(" + result + ")";
+			return result;
 		}catch (Exception e) {
-			return callback + "(" + JSON.toJSONString(Result.doException("服务器异常，请稍后重试")) + ")";
+			return Result.doException("服务器异常，请稍后重试");
 		}
 	}
 	
@@ -69,22 +69,22 @@ public class UserModule {
 	 *    
 	 */
 	@At("/register")
-	@Ok("raw")
-	@Fail("raw")
-	public String register(@Param("userName") String userName , @Param("passwd") String passwd ,@Param("callback") String callback, HttpSession session){
+	@Ok("json")
+	@Fail("json")
+	public Result register(@Param("userName") String userName , @Param("passwd") String passwd , HttpSession session){
 		try{
-			String result = userCheck(userName, passwd, true);
-			if(result == null || result.length() == 0){
+			Result result = userCheck(userName, passwd, true);
+			if(result == null){
 				User user = userServiceImpl.insertUser(new User(userName.trim() , passwd.trim()));
 				if(user != null && user.getuId() > 0){
-					result = JSON.toJSONString(Result.doSuccess(user, "注册成功"));
+					result = Result.doSuccess(user, "注册成功");
 				}else{
-					result = JSON.toJSONString(Result.doError("注册失败，服务器异常"));
+					result = Result.doError("注册失败，服务器异常");
 				}
 			}
-			return callback + "(" + result + ")";
+			return result;
 		}catch (Exception e) {
-			return callback + "(" + JSON.toJSONString(Result.doException("服务器异常，请稍后重试")) + ")";
+			return Result.doException("服务器异常，请稍后重试");
 		}
 	}
 	
@@ -106,20 +106,20 @@ public class UserModule {
 	 *    <p><strong>功能：</strong>检测用户输入数据的合法性
 	 *    
 	 */
-	public String userCheck(String userName , String passwd , boolean isRegister){
+	public Result userCheck(String userName , String passwd , boolean isRegister){
 		if(userName == null || passwd == null || Strings.isBlank(userName) || Strings.isBlank(passwd)){
-			return JSON.toJSONString(Result.doError("用户名/密码不能为空"));
+			return Result.doError("用户名/密码不能为空");
 		}
 		if(passwd.trim().length()<6 || passwd.trim().length()>12){
-			return JSON.toJSONString(Result.doError("输入的密码长度不合法"));
+			return Result.doError("输入的密码长度不合法");
 		}
 		if(isRegister) {
 			if(userServiceImpl.countUser(userName.trim()) > 0){
-				return JSON.toJSONString(Result.doError("该用户已存在,请直接登录"));
+				return Result.doError("该用户已存在,请直接登录");
 			}
 		}else {
 			if(userServiceImpl.countUser(userName.trim()) == 0){
-				return JSON.toJSONString(Result.doError("该用户不存在"));
+				return Result.doError("该用户不存在");
 			}
 		}
 		return null;

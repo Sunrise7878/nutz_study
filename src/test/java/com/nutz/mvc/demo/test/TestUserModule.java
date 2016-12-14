@@ -6,7 +6,9 @@ import org.junit.Test;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 
+import com.alibaba.fastjson.JSON;
 import com.nutz.mvc.demo.modules.UserModule;
+import com.nutz.mvc.demo.utils.Result;
 
 public class TestUserModule extends TestBase{
 	
@@ -29,9 +31,9 @@ public class TestUserModule extends TestBase{
 		String userName = scanner.nextLine();
 		System.out.print("请输入密码:");
 		String passwd = scanner.nextLine();
-		String result = userMoudle.register(userName, passwd, null, null);
+		Result result = userMoudle.register(userName, passwd , null);
 		System.out.println("");
-		log.debug("访问结果: " + result);
+		log.debug("访问结果: " + JSON.toJSONString(result));
 	}
 	
 	@Override

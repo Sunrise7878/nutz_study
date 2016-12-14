@@ -15,13 +15,12 @@
 		$.ajax({
 			url : '<%=basePath%>testjsonp',
 			type : 'POST',
-			dataType : 'jsonp',
-			jsonp:"callback",
+			dataType : 'json',
 			data : {"userName" : $('#userName').val() , "passwd" : $('#passwd').val()},
-			jsonpCallback:"success_jsonp",
 			success : function(data) {
 				if(data.status == 'success'){
 					window.location = "<%=basePath%>/views/user.jsp"
+					alert(data.message)
 				}else{
 					alert(data.message)
 				}
