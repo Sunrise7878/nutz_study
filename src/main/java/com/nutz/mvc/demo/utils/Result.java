@@ -2,6 +2,8 @@ package com.nutz.mvc.demo.utils;
 
 import java.io.Serializable;
 
+import com.alibaba.fastjson.JSON;
+
 public class Result implements Serializable{
 	
 	/**
@@ -32,10 +34,10 @@ public class Result implements Serializable{
 	}
 	
 	//请求成功的方法
-	public static Result doSuccess(Object object){
+	public static Result doSuccess(Object object , String message){
 		Result result = new Result();
 		result.setStatus("success");
-		result.setMessage("请求处理成功");
+		result.setMessage(message);
 		result.setData(object);
 		return result;
 	}

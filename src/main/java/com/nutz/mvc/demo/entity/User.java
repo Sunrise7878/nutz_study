@@ -68,8 +68,23 @@ public class User implements Serializable{
 	@Many(target = UserComments.class , field = "uId")
 	private List<UserComments> comments;
 	
+	public User() {
+		super();
+	}
 	
+	public User(String userName, String userPwd) {
+		super();
+		this.userName = userName;
+		this.userPwd = userPwd;
+	}
 	
+	public User(String userName, String userPwd, String nickName) {
+		super();
+		this.userName = userName;
+		this.userPwd = userPwd;
+		this.nickName = nickName;
+	}
+
 	public String getUserName() {
 		return userName;
 	}
@@ -82,8 +97,6 @@ public class User implements Serializable{
 	public void setUserPwd(String userPwd) {
 		this.userPwd = userPwd;
 	}
-	
-	
 	public String getNickName() {
 		return nickName;
 	}
@@ -91,10 +104,6 @@ public class User implements Serializable{
 		this.nickName = nickName;
 	}
 	
-	
-	public User() {
-		super();
-	}
 	public String getGender() {
 		return gender;
 	}
@@ -138,21 +147,6 @@ public class User implements Serializable{
 	public void setComments(List<UserComments> comments) {
 		this.comments = comments;
 		
-	}
-	public User(int uId, String userName, String userPwd, int checkCode, String nickName, String gender, int height,
-			Double weight, Date birthday, String city, List<UserComments> comments) {
-		super();
-		this.uId = uId;
-		this.userName = userName;
-		this.userPwd = userPwd;
-		this.checkCode = checkCode;
-		this.nickName = nickName;
-		this.gender = gender;
-		this.height = height;
-		this.weight = weight;
-		this.birthday = birthday;
-		this.city = city;
-		this.comments = comments;
 	}
 	public Date getBirthday() {
 		return birthday;
