@@ -155,5 +155,13 @@ public class User implements Serializable{
 	public void setBirthday(Date birthday) {
 		this.birthday = birthday;
 	}
+
+	@Override
+	public String toString() {
+		return "User [uId=" + uId + ", userName=" + userName + ", userPwd=" + userPwd + ", checkCode=" + checkCode
+				+ ", nickName=" + nickName + ", gender=" + gender + ", height=" + height + ", weight=" + weight
+				+ ", birthday=" + birthday + ", city=" + city + ", comments=" + comments + "]";
+	}
+	
 	
 }
