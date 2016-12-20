@@ -6,12 +6,15 @@ import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
 import org.nutz.lang.Strings;
 import org.nutz.mvc.annotation.At;
+import org.nutz.mvc.annotation.By;
 import org.nutz.mvc.annotation.Fail;
+import org.nutz.mvc.annotation.Filters;
 import org.nutz.mvc.annotation.Ok;
 import org.nutz.mvc.annotation.Param;
 
 import com.nutz.mvc.demo.entity.User;
 import com.nutz.mvc.demo.service.UserService;
+import com.nutz.mvc.demo.utils.LoginFilter;
 import com.nutz.mvc.demo.utils.MD5Encryption;
 import com.nutz.mvc.demo.utils.Result;
 
@@ -86,6 +89,14 @@ public class UserModule {
 		}catch (Exception e) {
 			return Result.doException("服务器异常，请稍后重试");
 		}
+	}
+	
+	@At("/test")
+	@Ok("json")
+	@Fail("json")
+	@Filters(@By(type = LoginFilter.class))
+	public Object testFilter(){
+		return Result.doSuccess("登录成功", "登录成功");
 	}
 	
 	/**
