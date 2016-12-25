@@ -36,11 +36,8 @@
    			<artifactId>fastjson</artifactId>
     		<version>1.2.22</version>
 		</dependency>
-<<<<<<< HEAD
 		
 		
-=======
->>>>>>> 8e31291d36978c8b5243d6ffafb9420b63299984
 	</dependencies>
 	
 	
